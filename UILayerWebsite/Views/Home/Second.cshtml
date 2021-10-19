@@ -1,0 +1,57 @@
+@using DbLayer.Models
+@{
+    ViewData["Title"] = "Второе задание";
+    SecondModel modl = Model;
+    var i = 1;
+}
+<h1 class="mb-5">@ViewData["Title"]</h1>
+
+<div class="main-content">
+    <div class="border rounded p-3">
+        <h3 class="text-center fw-bold mb-3">Ввод данных</h3>
+        <form action="/Home/Second">
+            <div class="form-group mb-3">
+                <label class="fw-bold" for="stocks-names">Ценные бумаги</label>
+                <select class="form-select" id="stocks-names" name="stockNames" multiple required>
+                    @foreach (Stock s in modl.Stocks)
+                    {
+                        <option>@s.Name</option>
+                    }
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Отправить</button>
+        </form>
+
+    </div>
+
+    @if (modl.IsRes)
+    {
+        <div class="border rounded p-3">
+            <h3 class="text-center fw-bold mb-3">Результат</h3>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">№</th>
+                    <th scope="col">Название</th>
+                    <th scope="col">Курс</th>
+                    <th scope="col">Процент</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in @modl.Result)
+                {
+                    <tr>
+                        <th scope="row">@i</th>
+                        @{
+                            i++;
+                        }
+                        <td>@item.Key</td>
+                        <td>@item.Value.Rate</td>
+                        <td>@item.Value.Percent.ToString("F2")</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

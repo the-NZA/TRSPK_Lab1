@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using DbLayer;
 using DbLayer.Repository;
 using BusinessLayer;
@@ -24,7 +23,7 @@ namespace Runner
 				Console.WriteLine("First answer: {0}\n", ansOne);
 
 				Dictionary<string, RateWithPercent> ansTwo =  slvr.SolveTwo(new List<string> {"YNDX", "APPL", "GOOG", "SC", "MSFT"});
-				Console.WriteLine("Second answer", ansOne);
+				Console.WriteLine("Second answer:\n");
 				foreach (var item in ansTwo)
 				{
 					Console.WriteLine(item);
