@@ -40,13 +40,23 @@
                 </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>@modl.Owner</td>
-                        <td>@modl.Date</td>
-                        <td>@modl.Result</td>
-                    </tr>
+                <tr>
+                    <td>@modl.Owner</td>
+                    <td>@modl.Date</td>
+                    <td>@modl.Result</td>
+                </tr>
                 </tbody>
             </table>
+        </div>
+    }
+
+    @if (modl.IsError)
+    {
+        <div class="border rounded p-3">
+            <h3 class="text-center fw-bold mb-3">Ошибка</h3>
+            <div class="alert alert-danger" role="alert">
+                @modl.ErrMessage
+            </div>
         </div>
     }
 </div>

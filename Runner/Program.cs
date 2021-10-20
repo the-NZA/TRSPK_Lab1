@@ -17,6 +17,8 @@ namespace Runner
 					new PortfolioRepository(Helpers.DefaultPortfolioDbPath);
 				Db db = new Db(stockRepo, portfolioRepo);
 
+				db.PortfolioRepository.GetAll();
+
 				Solver slvr = new Solver(db);
 
 				decimal ansOne = slvr.SolveOne("One", DateTime.Today.AddDays(-2));

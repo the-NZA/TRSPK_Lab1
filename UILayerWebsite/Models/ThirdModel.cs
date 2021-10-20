@@ -12,5 +12,7 @@ namespace UILayerWebsite.Models
 		public DateTime DateTo { get; set; }
 		public (decimal pTurnover, decimal sTurnover) Result { get; set; }
 		public bool IsRes { get; set; }
+		public bool IsError { get; set; }
+		public string ErrMessage { get; set; }
 	}
 }

@@ -54,4 +54,14 @@
             </table>
         </div>
     }
+
+    @if (modl.IsError)
+    {
+        <div class="border rounded p-3">
+            <h3 class="text-center fw-bold mb-3">Ошибка</h3>
+            <div class="alert alert-danger" role="alert">
+                @modl.ErrMessage
+            </div>
+        </div>
+    }
 </div>

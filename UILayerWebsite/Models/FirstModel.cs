@@ -11,5 +11,7 @@ namespace UILayerWebsite.Models
 		public DateTime Date { get; set; }
 		public decimal Result { get; set; }
 		public bool IsRes { get; set; }
+		public bool IsError { get; set; }
+		public string ErrMessage { get; set; }
 	}
 }
