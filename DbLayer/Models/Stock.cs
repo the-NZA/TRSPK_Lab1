@@ -17,7 +17,7 @@ namespace DbLayer.Models
 			}
 
 			// If rates were passed
-			if (rates.Count > 0)
+			if (rates != null && rates.Count > 0)
 			{
 				_rates = rates;
 			}
