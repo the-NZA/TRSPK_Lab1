@@ -12,6 +12,11 @@ namespace DbLayer
 
 		public Db(IStockRepository stockRepository, IPortfolioRepository portfolioRepository)
 		{
+			if (stockRepository == null || portfolioRepository == null)
+			{
+				throw new Exception("Portfolios can't be null");
+			}
+			
 			StockRepository = stockRepository;
 			PortfolioRepository = portfolioRepository;
 		}

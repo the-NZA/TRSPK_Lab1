@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using BusinessLayer;
 using DbLayer;
-using DbLayer.Models;
 using DbLayer.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -109,14 +107,14 @@ namespace UILayerWebsite.Controllers
 				if (!String.IsNullOrWhiteSpace(owner) && !String.IsNullOrWhiteSpace(dateFrom) &&
 				    !String.IsNullOrWhiteSpace(dateTo))
 				{
-					DateTime DateFrom = DateTime.Parse(dateFrom);
-					DateTime DateTo = DateTime.Parse(dateTo);
+					DateTime dFrom = DateTime.Parse(dateFrom);
+					DateTime dTo = DateTime.Parse(dateTo);
 					Solver slvr = new Solver(_db);
 
-					model.Result = slvr.SolveThree(owner, DateFrom, DateTo);
+					model.Result = slvr.SolveThree(owner, dFrom, dTo);
 					model.Owner = owner;
-					model.DateFrom = DateFrom;
-					model.DateTo = DateTo;
+					model.DateFrom = dFrom;
+					model.DateTo = dTo;
 					model.IsRes = true;
 				}
 			}

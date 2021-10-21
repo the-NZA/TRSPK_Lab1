@@ -34,6 +34,11 @@ namespace BusinessLayer
 
 		public Solver(Db db)
 		{
+			if (db == null)
+			{
+				throw new Exception("Db can't be null");
+			}
+			
 			_db = db;
 		}
 
