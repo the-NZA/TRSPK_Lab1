@@ -14,7 +14,7 @@ namespace UILayerConsole
 			Db db = null;
 			Solver slvr = null;
 
-			// Init repositories and db
+			// Init repositories, db and solver
 			try
 			{
 				StockRepository stockRepo = new StockRepository(Helpers.DefaultStocksDbPath);
@@ -31,469 +31,358 @@ namespace UILayerConsole
 			bool isRun = true;
 			while (isRun)
 			{
-				Console.Write(
-					"Меню:\n" +
-					"1.   Стоимость портфеля на выбранный день\n" +
-					"2.   Стоимость ценных бумаг на текущий день\n" +
-					"3.   Оборот за выбранный период\n" +
-					"4.   Работа с ценными бумагами\n" +
-					"5.   Работа с портфелями пользователей\n" +
-					"6.   Выход из программы\n> "
-				);
-
+				int indx;
 				string tmp;
 				List<Portfolio> owners;
+				List<Stock> stocks;
+				int cmdNum = 0;
 
-				int idx;
-				switch (Convert.ToInt32(Console.ReadLine()))
+				// Print menu and read command number
+				try
+				{
+					cmdNum = HelperFuncs.ReadInt(
+						"Меню:\n" +
+						"1.   Стоимость портфеля на выбранный день\n" +
+						"2.   Стоимость ценных бумаг на текущий день\n" +
+						"3.   Оборот за выбранный период\n" +
+						"4.   Работа с ценными бумагами\n" +
+						"5.   Работа с портфелями пользователей\n" +
+						"6.   Выход из программы"
+					);
+				}
+				catch (Exception e)
+				{
+					Console.WriteLine($"Error: {e.Message}");
+				}
+
+				switch (cmdNum)
 				{
 					case 1:
-						Console.WriteLine("Введите номер пользователя");
 						owners = db.PortfolioRepository.GetAll();
-
 						for (int i = 0; i < owners.Count; i++)
 						{
 							Console.WriteLine($"{i}.   {owners[i].Owner}");
 						}
 
-						Console.Write("> ");
-
-						// Read index
-						tmp = Console.ReadLine();
-						if (String.IsNullOrWhiteSpace(tmp))
-						{
-							Console.WriteLine("Error during reading: entered empty string");
-							break;
-						}
-
-						// Get index
-						idx = Convert.ToInt32(tmp);
-
-						if (idx < 0 || idx >= owners.Count)
-						{
-							Console.WriteLine(
-								"Error during reading: entered non-valid number"
-							);
-							break;
-						}
-
-						Console.Write("Введите интересующую вас дату(формат 01.22.2021)\n> ");
-
-						// Read date
-						tmp = Console.ReadLine();
-						if (String.IsNullOrWhiteSpace(tmp))
-						{
-							Console.WriteLine("Error during reading: entered empty string");
-							break;
-						}
-
-						// Get date
-						DateTime date;
-						if (!DateTime.TryParse(tmp, out date))
-						{
-							Console.WriteLine(
-								"Error during reading: entered not allowed date format\n");
-							break;
-						}
-
-						// Try to solve first assigment or handle errors
 						try
 						{
-							var resultOne = slvr.SolveOne(owners[idx].Owner, date);
+							// Read owners' index
+							uint idx = HelperFuncs.ReadUint(
+								"Введите номер пользователя",
+								(uint) owners.Count
+							);
+
+							// Read date
+							DateTime date =
+								HelperFuncs.ReadDate("Введите интересующую дату");
+
+							// Solve firsh assignment
+							var resultOne = slvr.SolveOne(owners[(int) idx].Owner, date);
 							Console.WriteLine(
-								$"Пользователь: {owners[idx].Owner}, Дата: {date:yyyy MMMM dd}, Стоимость: {resultOne}\n");
+								$"Пользователь: {owners[(int) idx].Owner}, Дата: {date:yyyy MMMM dd}, Стоимость: {resultOne}\n"
+							);
 						}
 						catch (NullReferenceException)
 						{
 							Console.WriteLine(
-								"Выбранная дата отсутсвует\n");
+								"Выбранная дата отсутсвует\n"
+							);
 						}
-						catch (Exception)
+						catch (Exception e)
 						{
-							Console.WriteLine(
-								"Error during solving: internal error\n");
+							Console.WriteLine($"Error: {e.Message}");
 						}
 
 						break;
 
 					case 2:
-						Console.WriteLine("Введите номера ценных бумаг через запятую");
-						var stocks = db.StockRepository.GetAll();
-
+						stocks = db.StockRepository.GetAll();
 						for (int i = 0; i < stocks.Count; i++)
 						{
 							Console.WriteLine($"{i}.   {stocks[i].Name}");
 						}
 
-						Console.Write("> ");
-
-						// Read indexes
-						tmp = Console.ReadLine();
-						if (String.IsNullOrWhiteSpace(tmp))
-						{
-							Console.WriteLine(
-								"Error during reading: entered empty string\n"
-							);
-							break;
-						}
-
-						// Create dict with string and int representation of index
-						// Avoiding duplicates
-						Dictionary<string, int> indexes = new Dictionary<string, int>();
-						foreach (var s in tmp.Split(","))
-						{
-							if (!indexes.ContainsKey(s))
-							{
-								indexes[s] = Convert.ToInt32(s);
-							}
-						}
-
-						// Get list of stock names
-						List<string> stocksNames = new List<string>();
-						foreach (var item in indexes)
-						{
-							stocksNames.Add(stocks[item.Value].Name);
-						}
-
-
-						// Try solve second assigment or handle errors
 						try
 						{
+							// Read string with indexies
+							// Create dict with string and int representation of index
+							// Avoiding duplicates
+							Dictionary<string, int> indexes = new Dictionary<string, int>();
+							foreach (
+								var s in HelperFuncs.ReadString(
+									"Введите номера ценных бумаг через запятую:w"
+								).Split(",")
+							)
+							{
+								if (!indexes.ContainsKey(s))
+								{
+									indexes[s] = Convert.ToInt32(s);
+								}
+							}
+
+							// Get list of stock names
+							List<string> stocksNames = new List<string>();
+							foreach (var item in indexes)
+							{
+								stocksNames.Add(stocks[item.Value].Name);
+							}
+
+							// Solve second assignment
 							var resultTwo = slvr.SolveTwo(stocksNames);
+
 							int i = 1;
 							foreach (var r in resultTwo)
 							{
 								Console.WriteLine(
-									$"{i}.  {r.Key}   {r.Value.Rate}   {r.Value.Percent}");
+									$"{i}.  {r.Key}   {r.Value.Rate}   {r.Value.Percent}"
+								);
 								i++;
 							}
 						}
-						catch (Exception)
+						catch (Exception e)
 						{
-							Console.WriteLine(
-								"Error during solving: internal error\n");
+							Console.WriteLine($"Error: {e.Message}");
 						}
 
 						break;
 
 					case 3:
-						Console.WriteLine("Введите номер пользователя");
 						owners = db.PortfolioRepository.GetAll();
-
 						for (int i = 0; i < owners.Count; i++)
 						{
 							Console.WriteLine($"{i}.   {owners[i].Owner}");
 						}
 
-						Console.Write("> ");
-
-						// Get index
-						tmp = Console.ReadLine();
-						if (String.IsNullOrWhiteSpace(tmp))
-						{
-							Console.WriteLine("Error during reading: entered empty string");
-							break;
-						}
-
-						idx = Convert.ToInt32(tmp);
-
-						if (idx < 0 || idx >= owners.Count)
-						{
-							Console.WriteLine(
-								"Error during reading: entered non-valid number"
-							);
-							break;
-						}
-
-						Console.Write("Введите начальную дату(формат 01.22.2021)\n> ");
-						tmp = Console.ReadLine();
-						if (String.IsNullOrWhiteSpace(tmp))
-						{
-							Console.WriteLine("Error during reading: entered empty string");
-							break;
-						}
-
-						// Get date from
-						DateTime dateFrom;
-						if (!DateTime.TryParse(tmp, out dateFrom))
-						{
-							Console.WriteLine(
-								"Error during reading: entered not allowed date format\n");
-							break;
-						}
-
-						Console.Write("Введите конечную дату(формат 01.22.2021)\n> ");
-						tmp = Console.ReadLine();
-						if (String.IsNullOrWhiteSpace(tmp))
-						{
-							Console.WriteLine("Error during reading: entered empty string");
-							break;
-						}
-
-						// Get date to
-						DateTime dateTo;
-						if (!DateTime.TryParse(tmp, out dateTo))
-						{
-							Console.WriteLine(
-								"Error during reading: entered not allowed date format\n");
-							break;
-						}
-
 						try
 						{
-							var resultThree = slvr.SolveThree(owners[idx].Owner, dateFrom,
-								dateTo);
+							// Read use index
+							uint idx = HelperFuncs.ReadUint(
+								"Введите номер пользователя",
+								(uint) owners.Count
+							);
+
+							// Read start date
+							DateTime dateFrom = HelperFuncs.ReadDate(
+								"Введите начальную дату"
+							);
+
+							// Read end date
+							DateTime dateTo = HelperFuncs.ReadDate(
+								"Введите начальную дату"
+							);
+
+							// Solve third assignment
+							var resultThree = slvr.SolveThree(
+								owners[(int) idx].Owner,
+								dateFrom,
+								dateTo
+							);
+
 							Console.WriteLine(
 								$"Покупки: {resultThree.pTurnover}, продажи: {resultThree.sTurnover}\n"
 							);
 						}
-						catch (Exception)
+						catch (Exception e)
 						{
-							Console.WriteLine(
-								"Error during solving: internal error\n");
+							Console.WriteLine($"Error: {e.Message}");
 						}
 
 						break;
 
 					case 4:
-						Console.Write(
-							"Подменю ценных бумаг:\n" +
-							"1.   Получить одну\n" +
-							"2.   Получить все\n" +
-							"3.   Создать\n" +
-							"4.   Удалить\n" +
-							"5.   Редактировать\n" +
-							"6.   Назад\n> "
-						);
-
-						switch (Convert.ToInt32(Console.ReadLine()))
+						try
 						{
-							case 1:
-								Console.Write("Введите название ценной бумаги\n> ");
-								tmp = Console.ReadLine().ToUpper();
-								if (String.IsNullOrWhiteSpace(tmp))
-								{
-									Console.WriteLine(
-										"Error during reading: entered empty string\n"
-									);
-									break;
-								}
+							cmdNum = HelperFuncs.ReadInt(
+								"Подменю ценных бумаг:\n" +
+								"1.   Получить одну\n" +
+								"2.   Получить все\n" +
+								"3.   Создать\n" +
+								"4.   Удалить\n" +
+								"5.   Редактировать\n" +
+								"6.   Назад\n> "
+							);
 
-								var s = db.StockRepository.Get(tmp);
-								if (s == null)
-								{
-									Console.WriteLine(
-										$"Ценной бумаги с именем {tmp} не существует\n"
-									);
-									break;
-								}
-
-								Console.WriteLine("{0}\n", s);
-
-								break;
-
-							case 2:
-								Console.WriteLine("Все ценные бумаги:");
-								foreach (var stock in db.StockRepository.GetAll())
-								{
-									Console.WriteLine("{0}\n", stock);
-								}
-
-								break;
-
-							case 3:
-								Console.Write(
-									"Введите название для новой ценной бумаги\n> "
-								);
-								tmp = Console.ReadLine().ToUpper();
-								if (String.IsNullOrWhiteSpace(tmp))
-								{
-									Console.WriteLine(
-										"Error during reading: entered empty string\n"
-									);
-									break;
-								}
-
-								if (db.StockRepository.Get(tmp) != null)
-								{
-									Console.WriteLine(
-										"Ценная бумага с таким именем уже существует\n"
-									);
-									break;
-								}
-
-								try
-								{
-									// Create empty stock
-									Stock newStock = new Stock(tmp, null);
-									Console.WriteLine(
-										"Введите начальные курс и дату"
+							string stockName; // store single stock name
+							switch (cmdNum)
+							{
+								case 1:
+									stockName = HelperFuncs.ReadString(
+										"Введите название ценной бумаги"
 									);
 
-									Console.Write(
-										"Введите дату(формат 01.22.2021)\n> "
-									);
-
-									// Read date
-									tmp = Console.ReadLine();
-									if (String.IsNullOrWhiteSpace(tmp))
+									var s = db.StockRepository.Get(stockName);
+									if (s == null)
 									{
 										Console.WriteLine(
-											"Error during reading: entered empty string");
+											$"Ценной бумаги с именем {stockName} не существует\n"
+										);
 										break;
 									}
 
-									// Get date
-									DateTime newDate;
-									if (!DateTime.TryParse(tmp, out newDate))
+									Console.WriteLine("{0}\n", s);
+									break;
+
+								case 2:
+									Console.WriteLine("Все ценные бумаги:");
+									foreach (
+										var stock in db.StockRepository.GetAll()
+									)
 									{
-										Console.WriteLine(
-											"Error during reading: entered not allowed date format\n");
-										break;
+										Console.WriteLine("{0}\n", stock);
 									}
 
-									Console.Write(
-										"Введите курс\n> "
-									);
+									break;
 
-									// Read rate 
-									tmp = Console.ReadLine();
-									if (String.IsNullOrWhiteSpace(tmp))
+								case 3:
+									try
 									{
-										Console.WriteLine(
-											"Error during reading: entered empty string");
-										break;
+										string newStockName =
+											HelperFuncs.ReadString(
+												"Введите название новой ценной бумаги"
+											);
+										newStockName = newStockName.ToUpper();
+
+										// Check for existing
+										if (db.StockRepository
+											.Get(newStockName) != null)
+										{
+											Console.WriteLine(
+												"Ценная бумага с таким именем уже существует\n"
+											);
+											break;
+										}
+
+										// Create empty stock
+										Stock newStock = new Stock(newStockName,
+											null);
+
+										// Read date
+										DateTime newDate = HelperFuncs.ReadDate(
+											"Введите начальные курс и дату" +
+											"Введите дату"
+										);
+
+										// Read rate
+										decimal newRate =
+											HelperFuncs.ReadDecimal(
+												"Введите курс"
+											);
+
+										if (newRate < 0)
+										{
+											Console.WriteLine(
+												"Начальный курс должен быть >= 0\n"
+											);
+											break;
+										}
+
+										// Add new rate to new stock
+										newStock.AddRate(new Rate(
+											newDate,
+											newRate)
+										);
+
+										// Save stock
+										if (db.StockRepository.Insert(newStock))
+										{
+											Console.WriteLine(
+												"Новая ценная бумага добавлена\n"
+											);
+										}
 									}
-
-									// Get rate
-									decimal newRate = Convert.ToDecimal(tmp);
-									if (newRate < 0)
+									catch (Exception e)
 									{
 										Console.WriteLine(
-											"Начальный курс должен быть >= 0\n");
-										break;
-									}
-
-									// Add new rate
-									newStock.AddRate(new Rate(newDate, newRate));
-
-									// Save stock
-									if (db.StockRepository.Insert(newStock))
-									{
-										Console.WriteLine(
-											"Новая ценная бумага добавлена\n"
+											$"Error: {e.Message}"
 										);
 									}
-								}
-								catch (Exception e)
-								{
-									Console.WriteLine(
-										$"Error during create new stock: {e.Message}\n");
-								}
 
-								break;
+									break;
 
-							case 4:
-								Console.Write("Введите название ценной бумаги\n> ");
-								tmp = Console.ReadLine().ToUpper();
-								if (String.IsNullOrWhiteSpace(tmp))
-								{
+								case 4:
+									try
+									{
+										// Read stock name
+										stockName = HelperFuncs.ReadString(
+											"Введите название ценной бумаги"
+										);
+
+										// Delete stock with entered name
+										db.StockRepository.Delete(stockName);
+									}
+									catch (Exception e)
+									{
+										Console.WriteLine(
+											$"Error: {e.Message}"
+										);
+									}
+
+									break;
+
+								case 5:
+									try
+									{
+										// Read stock name
+										stockName = HelperFuncs.ReadString(
+											"Введите название ценной бумаги"
+										);
+										stockName = stockName.ToUpper();
+
+										// Find stock
+										Stock foundStock =
+											db.StockRepository.Get(
+												stockName);
+										if (foundStock == null)
+										{
+											Console.WriteLine(
+												"Ценная бумага с таким именем не существует\n"
+											);
+											break;
+										}
+
+										// Read new date
+										DateTime newDate = HelperFuncs.ReadDate(
+											"Введите дату"
+										);
+
+										// Read new rate
+										decimal newRate =
+											HelperFuncs.ReadDecimal(
+												"Введите курс"
+											);
+
+										// Add new rate
+										foundStock.AddRate(new Rate(
+											newDate,
+											newRate)
+										);
+
+										// Save updated stock
+										db.StockRepository.Update(foundStock);
+									}
+									catch (Exception e)
+									{
+										Console.WriteLine(
+											$"Error: {e.Message}"
+										);
+									}
+
+									break;
+
+								case 6:
+									Console.Clear();
+									break;
+
+								default:
 									Console.WriteLine(
-										"Error during reading: entered empty string\n"
+										"Введен неверный номер операции"
 									);
 									break;
-								}
-
-								// Delete stock with entered name
-								db.StockRepository.Delete(tmp);
-
-								break;
-
-							case 5:
-								Console.Write("Введите название ценной бумаги\n> ");
-								tmp = Console.ReadLine().ToUpper();
-								if (String.IsNullOrWhiteSpace(tmp))
-								{
-									Console.WriteLine(
-										"Error during reading: entered empty string\n"
-									);
-									break;
-								}
-
-								Stock foundStock = db.StockRepository.Get(tmp);
-								if (foundStock == null)
-								{
-									Console.WriteLine(
-										"Ценная бумага с таким именем не существует\n"
-									);
-									break;
-								}
-
-								try
-								{
-									Console.Write(
-										"Введите дату(формат 01.22.2021)\n> "
-									);
-
-									// Read date
-									tmp = Console.ReadLine();
-									if (String.IsNullOrWhiteSpace(tmp))
-									{
-										Console.WriteLine(
-											"Error during reading: entered empty string");
-										break;
-									}
-
-									// Get date
-									DateTime newDate;
-									if (!DateTime.TryParse(tmp, out newDate))
-									{
-										Console.WriteLine(
-											"Error during reading: entered not allowed date format\n");
-										break;
-									}
-
-									Console.Write(
-										"Введите курс\n> "
-									);
-
-									// Read rate 
-									tmp = Console.ReadLine();
-									if (String.IsNullOrWhiteSpace(tmp))
-									{
-										Console.WriteLine(
-											"Error during reading: entered empty string");
-										break;
-									}
-
-									// Get rate
-									decimal newRate = Convert.ToDecimal(tmp);
-									if (newRate < 0)
-									{
-										Console.WriteLine(
-											"Начальный курс должен быть >= 0\n");
-										break;
-									}
-									
-									foundStock.AddRate(new Rate(newDate, newRate));
-									
-									db.StockRepository.Update(foundStock);
-								}
-								catch (Exception e)
-								{
-									Console.WriteLine(
-										$"Error during updating: {e.Message}");
-								}
-
-								break;
-
-							case 6:
-								Console.Clear();
-								break;
-
-							default:
-								Console.WriteLine("Введен неверный номер операции");
-								break;
+							}
+						}
+						catch (Exception e)
+						{
+							Console.WriteLine($"Error: {e.Message}");
 						}
 
 						break;
@@ -509,16 +398,223 @@ namespace UILayerConsole
 							"6.   Назад\n> "
 						);
 
+						switch (Convert.ToInt32(Console.ReadLine()))
+						{
+							case 1:
+								Console.Write("Введите имя владельца портфеля\n> ");
+								tmp = Console.ReadLine();
+								if (String.IsNullOrWhiteSpace(tmp))
+								{
+									Console.WriteLine(
+										"Error during reading: entered empty string\n"
+									);
+									break;
+								}
+
+								var p = db.PortfolioRepository.Get(tmp);
+								if (p == null)
+								{
+									Console.WriteLine(
+										$"Портфеля с владельцем {tmp} не существует\n"
+									);
+									break;
+								}
+
+								Console.WriteLine("{0}\n", p);
+								break;
+
+							case 2:
+								Console.WriteLine("Все портфели:");
+								foreach (var port in db.PortfolioRepository.GetAll())
+								{
+									Console.WriteLine("{0}\n", port);
+								}
+
+								break;
+
+							case 3:
+								Console.Write(
+									"Введите имя владельца нового портфеля\n> ");
+								tmp = Console.ReadLine();
+								if (String.IsNullOrWhiteSpace(tmp))
+								{
+									Console.WriteLine(
+										"Error during reading: entered empty string\n"
+									);
+									break;
+								}
+
+
+								// Try to create and save new portfolio
+								try
+								{
+									Console.WriteLine(
+										"Введите данные для первой сделки\n" +
+										"Выберите номер ценной бумаги\n> "
+									);
+
+									stocks = db.StockRepository.GetAll();
+									for (int i = 0; i < stocks.Count; i++)
+									{
+										Console.WriteLine(
+											$"{i}.   {stocks[i].Name}"
+										);
+									}
+
+									Console.Write("> ");
+
+									// Read index
+									tmp = Console.ReadLine();
+									if (String.IsNullOrWhiteSpace(tmp))
+									{
+										Console.WriteLine(
+											"Error during reading: entered empty string");
+										break;
+									}
+
+									// Get index
+									indx = Convert.ToInt32(tmp);
+
+									if (indx < 0 || indx >= stocks.Count)
+									{
+										Console.WriteLine(
+											"Error during reading: entered non-valid number"
+										);
+										break;
+									}
+
+									Console.WriteLine(
+										"Выберите тип сделки:\n" +
+										"1.   Покупка\n" +
+										"2.   Продажа\n> "
+									);
+
+									// Read DealType 
+									tmp = Console.ReadLine();
+									if (String.IsNullOrWhiteSpace(tmp))
+									{
+										Console.WriteLine(
+											"Error during reading: entered empty string"
+										);
+										break;
+									}
+
+									// Get DealType
+									DealType dt;
+									switch (Convert.ToInt32(tmp))
+									{
+										case 1:
+											dt = DealType.Purchase;
+											break;
+										case 2:
+											dt = DealType.Sale;
+											break;
+										default:
+											Console.WriteLine(
+												"Введено недопустимой значение"
+											);
+											continue;
+									}
+
+									Console.Write(
+										"Введите дату сделки(формат 01.22.2021)\n> "
+									);
+
+									// Read date
+									tmp = Console.ReadLine();
+									if (String.IsNullOrWhiteSpace(tmp))
+									{
+										Console.WriteLine(
+											"Error during reading: entered empty string");
+										break;
+									}
+
+									// Get date
+									DateTime newDate;
+									if (!DateTime.TryParse(tmp, out newDate))
+									{
+										Console.WriteLine(
+											"Error during reading: entered not allowed date format\n");
+										break;
+									}
+
+									Console.Write(
+										"Введите количество бумаг\n> "
+									);
+									// Read amount 
+									tmp = Console.ReadLine();
+									if (String.IsNullOrWhiteSpace(tmp))
+									{
+										Console.WriteLine(
+											"Error during reading: entered empty string");
+										break;
+									}
+
+									// Get amount
+									int newAmount = Convert.ToInt32(tmp);
+
+									// Create empty portfolio
+									Portfolio newPortfolio =
+										new Portfolio(tmp, null);
+
+									Deal newDeal = new Deal(stocks[indx], dt,
+										newDate,
+										newAmount);
+
+									// Add new deal 
+									newPortfolio.AddDeal(newDeal);
+
+									// Save portfolio
+									if (db.PortfolioRepository.Insert(newPortfolio))
+									{
+										Console.WriteLine(
+											"Новый портфель создан\n");
+									}
+								}
+								catch (Exception e)
+								{
+									Console.WriteLine(
+										$"Error during creating: {e.Message}\n"
+									);
+								}
+
+								break;
+
+							case 4:
+								// delete
+								break;
+
+							case 5:
+								// edit
+								break;
+
+							case 6:
+								Console.Clear();
+								break;
+
+							default:
+								Console.WriteLine("Введен неверный номер операции");
+								break;
+						}
+
 						break;
 
 					case 6:
-						Console.Write(
-							"Вы действительно хотите выйти из программы?\n" +
-							"1-Да\n0-Нет\n> "
-						);
-						if (Convert.ToInt32(Console.ReadLine()) == 1)
+						try
 						{
-							isRun = false;
+							cmdNum = HelperFuncs.ReadInt(
+								"Вы действительно хотите выйти из программы?\n" +
+								"1-Да\n0-Нет"
+							);
+
+							if (cmdNum == 1)
+							{
+								isRun = false;
+							}
+						}
+						catch (Exception e)
+						{
+							Console.WriteLine($"Error: {e.Message}");
 						}
 
 						break;
