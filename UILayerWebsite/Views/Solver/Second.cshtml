@@ -1,26 +1,23 @@
 @using DbLayer.Models
 @{
-    ViewData["Title"] = "Первое задание";
-    FirstModel modl = Model;
+    ViewData["Title"] = "Второе задание";
+    SecondModel modl = Model;
+    var i = 1;
 }
 <h1 class="mb-5">@ViewData["Title"]</h1>
 
 <div class="main-content">
     <div class="border rounded p-3">
         <h3 class="text-center fw-bold mb-3">Ввод данных</h3>
-        <form action="/Home/First">
+        <form action="/Solver/Second">
             <div class="form-group mb-3">
-                <label class="fw-bold" for="portfolio-owner">Владелец портфеля</label>
-                <select class="form-select" id="portfolio-owner" name="owner" required>
-                    @foreach (Portfolio p in modl.Portfolios)
+                <label class="fw-bold" for="stocks-names">Ценные бумаги</label>
+                <select class="form-select" id="stocks-names" name="stockNames" multiple required>
+                    @foreach (Stock s in modl.Stocks)
                     {
-                        <option>@p.Owner</option>
+                        <option>@s.Name</option>
                     }
                 </select>
-            </div>
-            <div class="form-group mb-3">
-                <label class="fw-bold" for="portfolio-date">Дата</label>
-                <input type="date" class="form-control" id="portfolio-date" name="date" required>
             </div>
             <button type="submit" class="btn btn-primary">Отправить</button>
         </form>
@@ -34,17 +31,25 @@
             <table class="table">
                 <thead>
                 <tr>
-                    <th scope="col">Пользователь</th>
-                    <th scope="col">Дата</th>
-                    <th scope="col">Стоимость</th>
+                    <th scope="col">№</th>
+                    <th scope="col">Название</th>
+                    <th scope="col">Курс</th>
+                    <th scope="col">Процент</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <td>@modl.Owner</td>
-                    <td>@modl.Date</td>
-                    <td>@modl.Result</td>
-                </tr>
+                @foreach (var item in @modl.Result)
+                {
+                    <tr>
+                        <th scope="row">@i</th>
+                        @{
+                            i++;
+                        }
+                        <td>@item.Key</td>
+                        <td>@item.Value.Rate</td>
+                        <td>@item.Value.Percent.ToString("F2")</td>
+                    </tr>
+                }
                 </tbody>
             </table>
         </div>

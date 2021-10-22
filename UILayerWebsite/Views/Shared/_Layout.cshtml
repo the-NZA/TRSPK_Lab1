@@ -22,14 +22,36 @@
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Главная</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="First">Первое</a>
+
+                    <li class="nav-item dropdown text-dark">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Задания
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <li>
+                                <a class="dropdown-item" asp-area="" asp-controller="Solver" asp-action="First">Первое</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" asp-area="" asp-controller="Solver" asp-action="Second">Второе</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" asp-area="" asp-controller="Solver" asp-action="Third">Третье</a>
+                            </li>
+                        </ul>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Second">Второе</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Third">Третье</a>
+
+                    <li class="nav-item dropdown text-dark">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                           Работа с таблицами 
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <li>
+                                <a class="dropdown-item" asp-area="" asp-controller="Solver" asp-action="First">Ценные бумаги</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" asp-area="" asp-controller="Solver" asp-action="Second">Портфели</a>
+                            </li>
+                        </ul>
                     </li>
                 </ul>
             </div>

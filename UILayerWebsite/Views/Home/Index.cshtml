@@ -7,10 +7,26 @@
     <p class="text-start">
         Дана база данных, содержащая сведения о наименовании ценной бумаге, ее котировках, а также составе портфеля пользователя: дате покупки/продажи, количестве бумаг и их стоимости в сделке. Покупок, как и продаж может быть несколько.
     </p>
+
+    <p class="text-start">Для каждой таблицы, составляющей БД необходимо реализовать:</p>
+    <ol class="text-start mb-3">
+        <li>Отображение одной записи</li>
+        <li>Отображение всех записей</li>
+        <li>Редактирование записи</li>
+        <li>Удаление записи</li>
+        <li>Добавление новой записи</li>
+    </ol>
+
+    <div class="list-group text-start d-flex justify-content-start mb-3" style="max-width: fit-content;">
+        <a class="list-group-item list-group-item-action" asp-area="" asp-controller="Solver" asp-action="First">Работа с ценными бумагами</a>
+        <a class="list-group-item list-group-item-action" asp-area="" asp-controller="Solver" asp-action="Second">Работа с портфелями пользователей</a>
+    </div>
+
+
     <p class="text-start">Необходимо решить следующие задачи:</p>
     <ol class="text-start">
-        <li>Вычислить стоимость портфеля на выбранный день – <a class="font-weight-bold" asp-area="" asp-controller="Home" asp-action="First">Решение</a></li>
-        <li>Вычислить стоимость указанных ценных бумаг на текущий день (с указанием процента прибыли/убытка – <a class="font-weight-bold" asp-area="" asp-controller="Home" asp-action="Second">Решение</a></li>
-        <li>Вычислить оборот клиента за указанный период – <a class="font-weight-bold" asp-area="" asp-controller="Home" asp-action="Third">Решение</a></li>
+        <li>Вычислить стоимость портфеля на выбранный день – <a class="font-weight-bold" asp-area="" asp-controller="Solver" asp-action="First">Решение</a></li>
+        <li>Вычислить стоимость указанных ценных бумаг на текущий день (с указанием процента прибыли/убытка – <a class="font-weight-bold" asp-area="" asp-controller="Solver" asp-action="Second">Решение</a></li>
+        <li>Вычислить оборот клиента за указанный период – <a class="font-weight-bold" asp-area="" asp-controller="Solver" asp-action="Third">Решение</a></li>
     </ol>
 </div>
