@@ -69,7 +69,18 @@ namespace UILayerWebsite.Controllers
 		// GetAll
 		public IActionResult GetAll()
 		{
-			return View();
+			List<Stock> stocks = null;
+			try
+			{
+				stocks = _db.StockRepository.GetAll();
+			}
+			catch (Exception e)
+			{
+				stocks = null;
+				_logger.LogError(e.ToString());
+			}
+
+			return View(stocks);
 		}
 
 		// Create 
