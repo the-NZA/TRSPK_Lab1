@@ -17,6 +17,13 @@ namespace UILayerWebsite.Controllers
 		public string ErrMessage { get; set; }
 	}
 
+	public class StocksCreate
+	{
+		public bool IsResult { get; set; }
+		public bool IsError { get; set; }
+		public string ErrMessage { get; set; }
+	}
+
 	public class StocksController : Controller
 	{
 		private readonly ILogger<StocksController> _logger;
@@ -69,7 +76,7 @@ namespace UILayerWebsite.Controllers
 		// GetAll
 		public IActionResult GetAll()
 		{
-			List<Stock> stocks = null;
+			List<Stock> stocks;
 			try
 			{
 				stocks = _db.StockRepository.GetAll();
@@ -84,9 +91,45 @@ namespace UILayerWebsite.Controllers
 		}
 
 		// Create 
-		public IActionResult Create()
+		public IActionResult Create(string stockName, string date, decimal rate)
 		{
-			return View();
+			StocksCreate model = new StocksCreate();
+			try
+			{
+				if (!String.IsNullOrWhiteSpace(stockName) && !String.IsNullOrWhiteSpace(date))
+				{
+					DateTime newDate;
+					if (!DateTime.TryParse(date, out newDate))
+					{
+						throw new Exception("Введена некорректная дата");
+					}
+
+					if (rate <= 0)
+					{
+						throw new Exception("Стоимость должна быть > 0");
+					}
+
+					// Create new stock
+					Stock newStock = new Stock(stockName.ToUpper(), new List<Rate>
+					{
+						new Rate(newDate, rate)
+					});
+
+					// save new stock
+					if (_db.StockRepository.Insert(newStock))
+					{
+						model.IsResult = true;
+					}
+				}
+			}
+			catch (Exception e)
+			{
+				_logger.LogError(e.ToString());
+				model.IsError = true;
+				model.ErrMessage = e.Message;
+			}
+
+			return View(model);
 		}
 
 		// Delete
