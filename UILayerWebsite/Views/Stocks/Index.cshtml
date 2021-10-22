@@ -1,0 +1,16 @@
+﻿@{
+    ViewData["Title"] = "Управление ценными бумагами";
+}
+
+<div class="text-center">
+    <h1 class="mb-5">Работа с ценными бумагами</h1>
+
+    <p class="text-start">Выбор действия:</p>
+    <div class="list-group text-start" style="max-width: fit-content;">
+        <a class="list-group-item list-group-item-action font-weight-bold" asp-area="" asp-controller="Stocks" asp-action="GetOne">Получить одну</a>
+        <a class="list-group-item list-group-item-action font-weight-bold" asp-area="" asp-controller="Stocks" asp-action="GetAll">Получить все</a>
+        <a class="list-group-item list-group-item-action font-weight-bold" asp-area="" asp-controller="Stocks" asp-action="Create">Создать</a>
+        <a class="list-group-item list-group-item-action font-weight-bold" asp-area="" asp-controller="Stocks" asp-action="Delete">Удалить</a>
+        <a class="list-group-item list-group-item-action font-weight-bold" asp-area="" asp-controller="Stocks" asp-action="Edit">Редактировать</a>
+    </div>
+</div>

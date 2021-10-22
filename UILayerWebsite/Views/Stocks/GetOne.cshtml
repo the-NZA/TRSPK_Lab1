@@ -1,0 +1,61 @@
+@using DbLayer.Models
+@using UILayerWebsite.Controllers
+@{
+    ViewData["Title"] = "Получить одну бумагу";
+    StocksGetOneModel modl = Model;
+}
+<h1 class="mb-5">@ViewData["Title"]</h1>
+
+<div class="main-content">
+    <div class="border rounded p-3">
+        <h3 class="text-center fw-bold mb-3">Ввод данных</h3>
+        <form action="/Stocks/GetOne">
+            <div class="form-group mb-3">
+                <label class="fw-bold" for="stocks-names">Выберите ценную бумагу</label>
+                <select class="form-select" id="stocks-names" name="stockName" required>
+                    @foreach (Stock s in modl.Stocks)
+                    {
+                        <option>@s.Name</option>
+                    }
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Отправить</button>
+        </form>
+
+    </div>
+
+    @if (modl.IsResult)
+    {
+        <div class="border rounded p-3">
+            <h3 class="text-center fw-bold mb-3">Результат</h3>
+            <h4>Название: @modl.Stocks[modl.Idx].Name</h4>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">Дата</th>
+                    <th scope="col">Стоимость</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (Rate r in @modl.Stocks[modl.Idx].GetRates())
+                {
+                    <tr>
+                        <td>@r.Date.ToString("yyyy MMMM dd")</td>
+                        <td>@r.Price</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    @if (modl.IsError)
+    {
+        <div class="border rounded p-3">
+            <h3 class="text-center fw-bold mb-3">Ошибка</h3>
+            <div class="alert alert-danger" role="alert">
+                @modl.ErrMessage
+            </div>
+        </div>
+    }
+</div>

@@ -1,0 +1,62 @@
+@using DbLayer.Models
+@{
+    ViewData["Title"] = "Первое задание";
+    FirstModel modl = Model;
+}
+<h1 class="mb-5">@ViewData["Title"]</h1>
+
+<div class="main-content">
+    <div class="border rounded p-3">
+        <h3 class="text-center fw-bold mb-3">Ввод данных</h3>
+        <form action="/Solver/First">
+            <div class="form-group mb-3">
+                <label class="fw-bold" for="portfolio-owner">Владелец портфеля</label>
+                <select class="form-select" id="portfolio-owner" name="owner" required>
+                    @foreach (Portfolio p in modl.Portfolios)
+                    {
+                        <option>@p.Owner</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group mb-3">
+                <label class="fw-bold" for="portfolio-date">Дата</label>
+                <input type="date" class="form-control" id="portfolio-date" name="date" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Отправить</button>
+        </form>
+
+    </div>
+
+    @if (modl.IsRes)
+    {
+        <div class="border rounded p-3">
+            <h3 class="text-center fw-bold mb-3">Результат</h3>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">Пользователь</th>
+                    <th scope="col">Дата</th>
+                    <th scope="col">Стоимость</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>@modl.Owner</td>
+                    <td>@modl.Date</td>
+                    <td>@modl.Result</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    }
+
+    @if (modl.IsError)
+    {
+        <div class="border rounded p-3">
+            <h3 class="text-center fw-bold mb-3">Ошибка</h3>
+            <div class="alert alert-danger" role="alert">
+                @modl.ErrMessage
+            </div>
+        </div>
+    }
+</div>

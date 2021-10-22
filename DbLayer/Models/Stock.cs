@@ -94,6 +94,11 @@ namespace DbLayer.Models
 			return _rates.Find(r => r.Date == date);
 		}
 
+		public List<Rate> GetRates()
+		{
+			return this._rates;
+		}
+
 		public string Marshal()
 		{
 			StringBuilder sb = new StringBuilder();
