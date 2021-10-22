@@ -5,40 +5,10 @@ using DbLayer.Models;
 using DbLayer.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using UILayerWebsite.Models;
 
 namespace UILayerWebsite.Controllers
 {
-	public class StocksGetOneModel
-	{
-		public List<Stock> Stocks { get; set; }
-		public int Idx { get; set; }
-		public bool IsError { get; set; }
-		public bool IsResult { get; set; }
-		public string ErrMessage { get; set; }
-	}
-
-	public class StocksCreate
-	{
-		public bool IsResult { get; set; }
-		public bool IsError { get; set; }
-		public string ErrMessage { get; set; }
-	}
-
-	public class StocksDelete
-	{
-		public List<Stock> Stocks { get; set; }
-		public bool IsResult { get; set; }
-		public bool IsError { get; set; }
-		public string ErrMessage { get; set; }
-	}
-
-	public class StocksEdit
-	{
-		public List<Stock> Stocks { get; set; }
-		public bool IsResult { get; set; }
-		public bool IsError { get; set; }
-		public string ErrMessage { get; set; }
-	}
 
 	public class StocksController : Controller
 	{
@@ -109,7 +79,7 @@ namespace UILayerWebsite.Controllers
 		// Create 
 		public IActionResult Create(string stockName, string date, decimal rate)
 		{
-			StocksCreate model = new StocksCreate();
+			StocksCreateModel model = new StocksCreateModel();
 			try
 			{
 				if (!String.IsNullOrWhiteSpace(stockName) && !String.IsNullOrWhiteSpace(date))
@@ -151,7 +121,7 @@ namespace UILayerWebsite.Controllers
 		// Delete
 		public IActionResult Delete(string stockName)
 		{
-			StocksDelete model = new StocksDelete();
+			StocksDeleteModel model = new StocksDeleteModel();
 			try
 			{
 				// If stock name selected than delete it
@@ -177,7 +147,7 @@ namespace UILayerWebsite.Controllers
 		// Edit
 		public IActionResult Edit(string stockName, string date, decimal rate)
 		{
-			StocksEdit model = new StocksEdit();
+			StocksEditModel model = new StocksEditModel();
 			try
 			{
 				if (!String.IsNullOrWhiteSpace(stockName) && !String.IsNullOrWhiteSpace(date))
