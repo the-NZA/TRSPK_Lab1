@@ -10,7 +10,6 @@ namespace DbLayer.Repository
 		void Delete(string name);
 		void Update(Stock update);
 		List<Stock> GetAll();
-
 		void PrintAll();
 	}
 
@@ -19,8 +18,8 @@ namespace DbLayer.Repository
 		bool Insert(Portfolio portfolio);
 		Portfolio Get(string owner);
 		void Update(Portfolio portfolio);
+		public void Delete(string owner);
 		List<Portfolio> GetAll();
-
 		void PrintAll();
 	}
 }
