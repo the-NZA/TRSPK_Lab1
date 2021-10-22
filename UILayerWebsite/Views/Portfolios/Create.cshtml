@@ -1,0 +1,67 @@
+@using DbLayer.Models
+@{
+    ViewData["Title"] = "Добавить новую ценную бумагу";
+    PortfoliosCreateModel modl = Model;
+}
+<h1 class="mb-5">@ViewData["Title"]</h1>
+
+<div class="main-content">
+    @if (modl.Stocks != null)
+    {
+        <div class="border rounded p-3">
+            <h3 class="text-center fw-bold mb-3">Ввод данных</h3>
+            <form action="/Portfolios/Create">
+                <div class="form-group mb-3">
+                    <label class="fw-bold" for="owner-name">Имя владельца портфеля</label>
+                    <input type="text" class="form-control" id="owner-name" name="ownerName" required>
+                </div>
+                <h4 class="border-bottom fs-5 pb-3 mb-3">Начальная сделка</h4>
+                <div class="form-group mb-3">
+                    <label class="fw-bold" for="stock-name">Выберите ценную бумагу</label>
+                    <select class="form-select" id="stock-name" name="stockName" required>
+                        @foreach (Stock s in modl.Stocks)
+                        {
+                            <option>@s.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group mb-3">
+                    <label class="fw-bold" for="stock-date">Дата</label>
+                    <input type="date" class="form-control" id="stock-date" name="date" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label class="fw-bold" for="deal-name">Выберите тип сделки</label>
+                    <select class="form-select" id="deal-name" name="dealStr" required>
+                        <option>Покупка</option>
+                        <option>Продажа</option>
+                    </select>
+                </div>
+                <div class="form-group mb-3">
+                    <label class="fw-bold" for="stock-num">Количество</label>
+                    <input type="number" step="1" min="0" class="form-control" id="stock-num" name="amount" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Отправить</button>
+            </form>
+        </div>
+    }
+
+    @if (modl.IsResult)
+    {
+        <div class="border rounded p-3">
+            <h3 class="text-center fw-bold mb-3">Результат</h3>
+            <div class="alert alert-success" role="alert">
+                Новый портфель успешно создан
+            </div>
+        </div>
+    }
+
+    @if (modl.IsError)
+    {
+        <div class="border rounded p-3">
+            <h3 class="text-center fw-bold mb-3">Ошибка</h3>
+            <div class="alert alert-danger" role="alert">
+                @modl.ErrMessage
+            </div>
+        </div>
+    }
+</div>
