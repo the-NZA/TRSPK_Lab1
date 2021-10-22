@@ -1,23 +1,23 @@
 @using DbLayer.Models
 @{
-    ViewData["Title"] = "Удалить ценную бумагу";
-    StocksDeleteModel modl = Model;
+    ViewData["Title"] = "Удалить портфель";
+    PortfoliosDeleteModel modl = Model;
 }
 <h1 class="mb-5">@ViewData["Title"]</h1>
 
 <div class="main-content" style="align-items: stretch">
 
-    @if (modl.Stocks != null)
+    @if (modl.Portfolios != null)
     {
         <div class="border rounded p-3">
             <h3 class="text-center fw-bold mb-3">Ввод данных</h3>
-            <form action="/Stocks/Delete">
+            <form action="/Portfolios/Delete">
                 <div class="form-group mb-3">
-                    <label class="fw-bold" for="stocks-names">Выберите ценную бумагу</label>
-                    <select class="form-select" id="stocks-names" name="stockName" required>
-                        @foreach (Stock s in modl.Stocks)
+                    <label class="fw-bold" for="owners-names">Выберите имя владельца портфеля</label>
+                    <select class="form-select" id="owners-names" name="ownerName" required>
+                        @foreach (Portfolio p in modl.Portfolios)
                         {
-                            <option>@s.Name</option>
+                            <option>@p.Owner</option>
                         }
                     </select>
                 </div>
@@ -31,7 +31,7 @@
         <div class="border rounded p-3">
             <h3 class="text-center fw-bold mb-3">Результат</h3>
             <div class="alert alert-success" role="alert">
-                Ценная бумага успешно удалена
+                Портфель успешно удален
             </div>
         </div>
     }

@@ -147,6 +147,11 @@ namespace DbLayer.Models
 
 			return deals;
 		}
+		
+		public List<Deal> GetDeals()
+		{
+			return this._deals;
+		}
 
 		public string Marshal()
 		{

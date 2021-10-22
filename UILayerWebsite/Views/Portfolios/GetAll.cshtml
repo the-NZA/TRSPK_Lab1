@@ -1,0 +1,61 @@
+@using DbLayer.Models
+@{
+    ViewData["Title"] = "Получить все портфели";
+    List<Portfolio> modl = Model;
+}
+<h1 class="mb-5">@ViewData["Title"]</h1>
+
+<div class="main-content main-content--one-col">
+    @if (modl != null)
+    {
+        <div class="border rounded p-3">
+            <h3 class="text-center fw-bold mb-3">Результат</h3>
+            <div class="grid-two-col">
+                @foreach (Portfolio p in modl)
+                {
+                    <div class="border p-3">
+                        <h4>@p.Owner</h4>
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th scope="col">№</th>
+                                <th scope="col">Ценная бумага</th>
+                                <th scope="col">Количество</th>
+                                <th scope="col">Тип операции</th>
+                                <th scope="col">Дата</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @{
+                                int i = 1;
+                            }
+                            @foreach (var item in p.GetDeals())
+                            {
+                                <tr>
+                                    <th scope="row">@i</th>
+                                    @{
+                                        i++;
+                                    }
+                                    <td>@item.StockName</td>
+                                    <td>@item.Amount</td>
+                                    <td>@item.Type</td>
+                                    <td>@item.Date.ToString("yyyy MMMM dd")</td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="border rounded p-3">
+            <h3 class="text-center fw-bold mb-3">Ошибка</h3>
+            <div class="alert alert-danger" role="alert">
+                Что-то пошло не так...
+            </div>
+        </div>
+    }
+</div>
