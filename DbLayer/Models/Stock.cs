@@ -113,15 +113,23 @@ namespace DbLayer.Models
 		public override string ToString()
 		{
 			StringBuilder sb = new StringBuilder();
+			const int numCols = 4;
 
-			sb.Append($"Name:{Name}; Rates:[");
+			sb.Append($"Name:{Name}\nRates:\n");
 
-			for (int i = 0; i < _rates.Count; i++)
+
+			for (int i = 0, j = 1; i < _rates.Count; i++)
 			{
-				sb.Append(string.Format((i + 1) == _rates.Count ? "({0})" : "({0}),", _rates[i]));
-			}
+				sb.Append(string.Format((i + 1) == _rates.Count ? "{0}" : "{0}, ", _rates[i]));
 
-			sb.Append(']');
+				if (j == numCols)
+				{
+					sb.Append('\n');
+					j = 0;
+				}
+
+				j++;
+			}
 
 			return sb.ToString();
 		}
