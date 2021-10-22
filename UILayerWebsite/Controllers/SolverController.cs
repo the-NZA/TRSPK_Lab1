@@ -28,7 +28,7 @@ namespace UILayerWebsite.Controllers
 		// First assignment solver
 		public IActionResult First(string owner, string date)
 		{
-			FirstModel model = new FirstModel();
+			FirstAssignmentModel assignmentModel = new FirstAssignmentModel();
 
 			try
 			{
@@ -37,57 +37,57 @@ namespace UILayerWebsite.Controllers
 					DateTime parsedDate = DateTime.Parse(date);
 					Solver slvr = new Solver(_db);
 
-					model.Result = slvr.SolveOne(owner, parsedDate);
-					model.Owner = owner;
-					model.Date = parsedDate;
-					model.IsRes = true;
+					assignmentModel.Result = slvr.SolveOne(owner, parsedDate);
+					assignmentModel.Owner = owner;
+					assignmentModel.Date = parsedDate;
+					assignmentModel.IsRes = true;
 				}
 			}
 			catch (NullReferenceException e)
 			{
 				_logger.LogError(e.ToString());
-				model.IsError = true;
-				model.ErrMessage = "Выбранная дата отсутствует";
+				assignmentModel.IsError = true;
+				assignmentModel.ErrMessage = "Выбранная дата отсутствует";
 			}
 			catch (Exception e)
 			{
 				_logger.LogError(e.ToString());
-				model.IsError = true;
-				model.ErrMessage = "Внутренняя ошибка";
+				assignmentModel.IsError = true;
+				assignmentModel.ErrMessage = "Внутренняя ошибка";
 			}
 
-			model.Portfolios = _db.PortfolioRepository.GetAll();
-			return View(model);
+			assignmentModel.Portfolios = _db.PortfolioRepository.GetAll();
+			return View(assignmentModel);
 		}
 
 		// Second assignment solver
 		public IActionResult Second(string[] stockNames)
 		{
-			SecondModel model = new SecondModel();
+			SecondAssignmentModel assignmentModel = new SecondAssignmentModel();
 			try
 			{
 				if (stockNames.Length > 0)
 				{
 					Solver slvr = new Solver(_db);
-					model.Result = slvr.SolveTwo(stockNames.ToList());
-					model.IsRes = true;
+					assignmentModel.Result = slvr.SolveTwo(stockNames.ToList());
+					assignmentModel.IsRes = true;
 				}
 			}
 			catch (Exception e)
 			{
 				_logger.LogError(e.ToString());
-				model.IsError = true;
-				model.ErrMessage = "Внутренняя ошибка";
+				assignmentModel.IsError = true;
+				assignmentModel.ErrMessage = "Внутренняя ошибка";
 			}
 		
-			model.Stocks = _db.StockRepository.GetAll();
-			return View(model);
+			assignmentModel.Stocks = _db.StockRepository.GetAll();
+			return View(assignmentModel);
 		}
 		
 		// Third assignment solver
 		public IActionResult Third(string owner, string dateFrom, string dateTo)
 		{
-			ThirdModel model = new ThirdModel();
+			ThirdAssignmentModel assignmentModel = new ThirdAssignmentModel();
 		
 			try
 			{
@@ -98,22 +98,22 @@ namespace UILayerWebsite.Controllers
 					DateTime dTo = DateTime.Parse(dateTo);
 					Solver slvr = new Solver(_db);
 		
-					model.Result = slvr.SolveThree(owner, dFrom, dTo);
-					model.Owner = owner;
-					model.DateFrom = dFrom;
-					model.DateTo = dTo;
-					model.IsRes = true;
+					assignmentModel.Result = slvr.SolveThree(owner, dFrom, dTo);
+					assignmentModel.Owner = owner;
+					assignmentModel.DateFrom = dFrom;
+					assignmentModel.DateTo = dTo;
+					assignmentModel.IsRes = true;
 				}
 			}
 			catch (Exception e)
 			{
 				_logger.LogError(e.ToString());
-				model.IsError = true;
-				model.ErrMessage = "Внутренняя ошибка";
+				assignmentModel.IsError = true;
+				assignmentModel.ErrMessage = "Внутренняя ошибка";
 			}
 		
-			model.Portfolios = _db.PortfolioRepository.GetAll();
-			return View(model);
+			assignmentModel.Portfolios = _db.PortfolioRepository.GetAll();
+			return View(assignmentModel);
 		}
 	}
 }

@@ -24,6 +24,22 @@ namespace UILayerWebsite.Controllers
 		public string ErrMessage { get; set; }
 	}
 
+	public class StocksDelete
+	{
+		public List<Stock> Stocks { get; set; }
+		public bool IsResult { get; set; }
+		public bool IsError { get; set; }
+		public string ErrMessage { get; set; }
+	}
+
+	public class StocksEdit
+	{
+		public List<Stock> Stocks { get; set; }
+		public bool IsResult { get; set; }
+		public bool IsError { get; set; }
+		public string ErrMessage { get; set; }
+	}
+
 	public class StocksController : Controller
 	{
 		private readonly ILogger<StocksController> _logger;
@@ -133,15 +149,76 @@ namespace UILayerWebsite.Controllers
 		}
 
 		// Delete
-		public IActionResult Delete()
+		public IActionResult Delete(string stockName)
 		{
-			return View();
+			StocksDelete model = new StocksDelete();
+			try
+			{
+				// If stock name selected than delete it
+				if (!String.IsNullOrWhiteSpace(stockName))
+				{
+					_db.StockRepository.Delete(stockName);
+					model.IsResult = true;
+				}
+
+				// Get all stocks
+				model.Stocks = _db.StockRepository.GetAll();
+			}
+			catch (Exception e)
+			{
+				_logger.LogError(e.ToString());
+				model.IsError = true;
+				model.ErrMessage = e.Message;
+			}
+
+			return View(model);
 		}
 
 		// Edit
-		public IActionResult Edit()
+		public IActionResult Edit(string stockName, string date, decimal rate)
 		{
-			return View();
+			StocksEdit model = new StocksEdit();
+			try
+			{
+				if (!String.IsNullOrWhiteSpace(stockName) && !String.IsNullOrWhiteSpace(date))
+				{
+					DateTime newDate;
+					if (!DateTime.TryParse(date, out newDate))
+					{
+						throw new Exception("Введена некорректная дата");
+					}
+
+					if (rate <= 0)
+					{
+						throw new Exception("Стоимость должна быть > 0");
+					}
+
+					// Create new stock
+					Stock foundStock = _db.StockRepository.Get(stockName);
+					if (foundStock == null)
+					{
+						throw new Exception("Ценная бумага не существует");
+					}
+
+					// Add new rate
+					foundStock.AddRate(new Rate(newDate, rate));
+
+					// save updated stock
+					_db.StockRepository.Update(foundStock);
+					model.IsResult = true;
+				}
+				
+				// Get all stocks
+				model.Stocks = _db.StockRepository.GetAll();
+			}
+			catch (Exception e)
+			{
+				_logger.LogError(e.ToString());
+				model.IsError = true;
+				model.ErrMessage = e.Message;
+			}
+
+			return View(model);
 		}
 	}
 }

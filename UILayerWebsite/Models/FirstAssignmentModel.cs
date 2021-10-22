@@ -4,7 +4,7 @@ using DbLayer.Models;
 
 namespace UILayerWebsite.Models
 {
-	public class FirstModel
+	public class FirstAssignmentModel
 	{
 		public List<Portfolio> Portfolios { get; set; }
 		public string Owner { get; set; }

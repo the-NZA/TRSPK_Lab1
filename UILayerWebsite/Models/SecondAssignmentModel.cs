@@ -4,7 +4,7 @@ using DbLayer.Models;
 
 namespace UILayerWebsite.Models
 {
-	public class SecondModel 
+	public class SecondAssignmentModel 
 	{
 		public List<Stock> Stocks{ get; set; }
 		public Dictionary<string, RateWithPercent> Result { get; set; }

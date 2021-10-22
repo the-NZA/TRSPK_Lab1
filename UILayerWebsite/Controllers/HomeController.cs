@@ -21,6 +21,7 @@ namespace UILayerWebsite.Controllers
 
 		public IActionResult Privacy()
 		{
+			_logger.LogInformation("Somewho going to privacy page...");
 			return View();
 		}
 
