@@ -70,6 +70,11 @@ namespace BusinessLayer
 		
 		public void DeletePortfolio(string ownerName)
 		{
+			if (String.IsNullOrWhiteSpace(ownerName))
+			{
+				throw new Exception("Owner name can't be null or empty");
+			}
+			
 			_db.PortfolioRepository.Delete(ownerName);
 		}
 
@@ -111,6 +116,10 @@ namespace BusinessLayer
 
 		public void DeleteStock(string stockName)
 		{
+			if (String.IsNullOrWhiteSpace(stockName))
+			{
+				throw new Exception("Stock name can't be null or empty");
+			}
 			_db.StockRepository.Delete(stockName);
 		}
 

@@ -11,7 +11,6 @@ namespace UILayerConsole
 	{
 		static void Main()
 		{
-			Db db = null;
 			Solver slvr = null;
 
 			// Init repositories, db and solver
@@ -20,7 +19,7 @@ namespace UILayerConsole
 				StockRepository stockRepo = new StockRepository(Helpers.DefaultStocksDbPath);
 				PortfolioRepository portfolioRepo =
 					new PortfolioRepository(Helpers.DefaultPortfolioDbPath);
-				db = new Db(stockRepo, portfolioRepo);
+				var db = new Db(stockRepo, portfolioRepo);
 				slvr = new Solver(db);
 			}
 			catch (Exception e)
@@ -31,7 +30,7 @@ namespace UILayerConsole
 			bool isRun = true;
 			while (isRun)
 			{
-				List<Portfolio> owners;
+				List<Portfolio> portfolios;
 				List<Stock> stocks;
 				int cmdNum = 0;
 
@@ -56,10 +55,10 @@ namespace UILayerConsole
 				switch (cmdNum)
 				{
 					case 1:
-						owners = db.PortfolioRepository.GetAll();
-						for (int i = 0; i < owners.Count; i++)
+						portfolios = slvr.GetAllPortfolios();
+						for (int i = 0; i < portfolios.Count; i++)
 						{
-							Console.WriteLine($"{i}.   {owners[i].Owner}");
+							Console.WriteLine($"{i}.   {portfolios[i].Owner}");
 						}
 
 						try
@@ -67,7 +66,7 @@ namespace UILayerConsole
 							// Read owners' index
 							uint idx = HelperFuncs.ReadUint(
 								"Введите номер пользователя",
-								(uint) owners.Count
+								(uint) portfolios.Count
 							);
 
 							// Read date
@@ -75,9 +74,9 @@ namespace UILayerConsole
 								HelperFuncs.ReadDate("Введите интересующую дату");
 
 							// Solve firsh assignment
-							var resultOne = slvr.SolveOne(owners[(int) idx].Owner, date);
+							var resultOne = slvr.SolveOne(portfolios[(int) idx].Owner, date);
 							Console.WriteLine(
-								$"Пользователь: {owners[(int) idx].Owner}, Дата: {date:yyyy MMMM dd}, Стоимость: {resultOne}\n"
+								$"Пользователь: {portfolios[(int) idx].Owner}, Дата: {date:yyyy MMMM dd}, Стоимость: {resultOne}\n"
 							);
 						}
 						catch (NullReferenceException)
@@ -94,7 +93,7 @@ namespace UILayerConsole
 						break;
 
 					case 2:
-						stocks = db.StockRepository.GetAll();
+						stocks = slvr.GetAllStocks();
 						for (int i = 0; i < stocks.Count; i++)
 						{
 							Console.WriteLine($"{i}.   {stocks[i].Name}");
@@ -108,7 +107,7 @@ namespace UILayerConsole
 							Dictionary<string, int> indexes = new Dictionary<string, int>();
 							foreach (
 								var s in HelperFuncs.ReadString(
-									"Введите номера ценных бумаг через запятую:w"
+									"Введите номера ценных бумаг через запятую"
 								).Split(",")
 							)
 							{
@@ -145,10 +144,10 @@ namespace UILayerConsole
 						break;
 
 					case 3:
-						owners = db.PortfolioRepository.GetAll();
-						for (int i = 0; i < owners.Count; i++)
+						portfolios = slvr.GetAllPortfolios(); 
+						for (int i = 0; i < portfolios.Count; i++)
 						{
-							Console.WriteLine($"{i}.   {owners[i].Owner}");
+							Console.WriteLine($"{i}.   {portfolios[i].Owner}");
 						}
 
 						try
@@ -156,7 +155,7 @@ namespace UILayerConsole
 							// Read use index
 							uint idx = HelperFuncs.ReadUint(
 								"Введите номер пользователя",
-								(uint) owners.Count
+								(uint) portfolios.Count
 							);
 
 							// Read start date
@@ -171,7 +170,7 @@ namespace UILayerConsole
 
 							// Solve third assignment
 							var resultThree = slvr.SolveThree(
-								owners[(int) idx].Owner,
+								portfolios[(int) idx].Owner,
 								dateFrom,
 								dateTo
 							);
@@ -217,7 +216,7 @@ namespace UILayerConsole
 										"Введите название ценной бумаги"
 									).ToUpper();
 
-									var s = db.StockRepository.Get(stockName);
+									var s = slvr.GetStock(stockName);
 									if (s == null)
 									{
 										Console.WriteLine(
@@ -238,7 +237,7 @@ namespace UILayerConsole
 							case 2:
 								Console.WriteLine("Все ценные бумаги:");
 								foreach (
-									var stock in db.StockRepository.GetAll()
+									var stock in slvr.GetAllStocks()
 								)
 								{
 									Console.WriteLine("{0}\n", stock);
@@ -255,8 +254,7 @@ namespace UILayerConsole
 										).ToUpper();
 
 									// Check for existing
-									if (db.StockRepository
-										.Get(newStockName) != null)
+									if(slvr.GetStock(newStockName) != null)
 									{
 										Console.WriteLine(
 											"Ценная бумага с таким именем уже существует\n"
@@ -295,7 +293,7 @@ namespace UILayerConsole
 									);
 
 									// Save stock
-									if (db.StockRepository.Insert(newStock))
+									if (slvr.InsertStock(newStock))
 									{
 										Console.WriteLine(
 											"Новая ценная бумага добавлена\n"
@@ -320,7 +318,7 @@ namespace UILayerConsole
 									).ToUpper();
 
 									// Delete stock with entered name
-									db.StockRepository.Delete(stockName);
+									slvr.DeleteStock(stockName);
 								}
 								catch (Exception e)
 								{
@@ -340,9 +338,7 @@ namespace UILayerConsole
 									).ToUpper();
 
 									// Find stock
-									Stock foundStock =
-										db.StockRepository.Get(
-											stockName);
+									Stock foundStock = slvr.GetStock(stockName);
 									if (foundStock == null)
 									{
 										Console.WriteLine(
@@ -369,7 +365,7 @@ namespace UILayerConsole
 									);
 
 									// Save updated stock
-									db.StockRepository.Update(foundStock);
+									slvr.UpdateStock(foundStock);
 								}
 								catch (Exception e)
 								{
@@ -422,7 +418,7 @@ namespace UILayerConsole
 										"Введите имя владельца портфеля"
 									);
 
-									var p = db.PortfolioRepository.Get(ownerName);
+									var p = slvr.GetPortfolio(ownerName);
 									if (p == null)
 									{
 										Console.WriteLine(
@@ -442,7 +438,7 @@ namespace UILayerConsole
 
 							case 2:
 								Console.WriteLine("Все портфели:");
-								foreach (var port in db.PortfolioRepository.GetAll())
+								foreach (var port in slvr.GetAllPortfolios())
 								{
 									Console.WriteLine("{0}\n", port);
 								}
@@ -457,8 +453,7 @@ namespace UILayerConsole
 									);
 
 									// Check for existing
-									if (db.PortfolioRepository
-										.Get(newOwnerName) != null)
+									if (slvr.GetPortfolio(newOwnerName) != null)
 									{
 										Console.WriteLine(
 											"Портфель с таким владельцем уже существует\n"
@@ -474,7 +469,7 @@ namespace UILayerConsole
 										"Введите данные для первой сделки"
 									);
 
-									stocks = db.StockRepository.GetAll();
+									stocks = slvr.GetAllStocks();
 									for (int i = 0; i < stocks.Count; i++)
 									{
 										Console.WriteLine(
@@ -535,7 +530,7 @@ namespace UILayerConsole
 									newPortfolio.AddDeal(newDeal);
 
 									// Save portfolio
-									if (db.PortfolioRepository.Insert(newPortfolio))
+									if (slvr.InsertPortfolio(newPortfolio))
 									{
 										Console.WriteLine(
 											"Новый портфель создан\n"
@@ -558,7 +553,7 @@ namespace UILayerConsole
 									);
 
 									// Delete portfolio by owner's name
-									db.PortfolioRepository.Delete(ownerName);
+									slvr.DeletePortfolio(ownerName);
 								}
 								catch (Exception e)
 								{
@@ -579,7 +574,7 @@ namespace UILayerConsole
 
 									// Find portfolio
 									Portfolio foundPortfolio =
-										db.PortfolioRepository.Get(ownerName);
+										slvr.GetPortfolio(ownerName);
 									if (foundPortfolio == null)
 									{
 										Console.WriteLine(
@@ -593,7 +588,7 @@ namespace UILayerConsole
 										"Введите данные для новой сделки"
 									);
 
-									stocks = db.StockRepository.GetAll();
+									stocks = slvr.GetAllStocks();
 									for (int i = 0; i < stocks.Count; i++)
 									{
 										Console.WriteLine(
@@ -654,7 +649,7 @@ namespace UILayerConsole
 									foundPortfolio.AddDeal(newDeal);
 
 									// Save updated portfolio
-									db.PortfolioRepository.Update(foundPortfolio);
+									slvr.UpdatePortfolio(foundPortfolio);
 								}
 								catch (Exception e)
 								{
