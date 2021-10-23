@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using BusinessLayer;
 using DbLayer;
 using DbLayer.Models;
 using DbLayer.Repository;
@@ -12,16 +13,19 @@ namespace UILayerWebsite.Controllers
 	public class PortfoliosController : Controller
 	{
 		private readonly ILogger<PortfoliosController> _logger;
-		private readonly Db _db;
+		private readonly Solver _solver;
 
 		public PortfoliosController(ILogger<PortfoliosController> logger)
 		{
 			_logger = logger;
 			// Init db
-			_db = new Db(
+			var db = new Db(
 				new StockRepository(Helpers.DefaultStocksDbPath),
 				new PortfolioRepository(Helpers.DefaultPortfolioDbPath)
 			);
+
+			// Init solver
+			_solver = new Solver(db);
 		}
 
 		// Index
@@ -37,7 +41,8 @@ namespace UILayerWebsite.Controllers
 			try
 			{
 				// Get all portfolios
-				model.Portfolios = _db.PortfolioRepository.GetAll();
+				model.Portfolios = _solver.GetAllPortfolios();
+
 				if (!String.IsNullOrWhiteSpace(ownerName))
 				{
 					// Find index of selected portfolio
@@ -66,7 +71,7 @@ namespace UILayerWebsite.Controllers
 			List<Portfolio> portfolios;
 			try
 			{
-				portfolios = _db.PortfolioRepository.GetAll();
+				portfolios = _solver.GetAllPortfolios();
 			}
 			catch (Exception e)
 			{
@@ -88,7 +93,7 @@ namespace UILayerWebsite.Controllers
 				    !String.IsNullOrWhiteSpace(dealStr))
 				{
 					// Check for existing
-					if (_db.PortfolioRepository.Get(ownerName) != null)
+					if (_solver.GetPortfolio(ownerName) != null)
 					{
 						throw new Exception("Портфель уже существует");
 					}
@@ -123,7 +128,7 @@ namespace UILayerWebsite.Controllers
 					}
 
 					// Get stock
-					Stock stock = _db.StockRepository.Get(stockName);
+					Stock stock = _solver.GetStock(stockName);
 					if (stock == null)
 					{
 						throw new Exception("Выбрана несуществующая ценная бумага");
@@ -136,13 +141,13 @@ namespace UILayerWebsite.Controllers
 					});
 
 					// Save new portfolio
-					if (_db.PortfolioRepository.Insert(newPortfolio))
+					if (_solver.InsertPortfolio(newPortfolio))
 					{
 						model.IsResult = true;
 					}
 				}
 
-				model.Stocks = _db.StockRepository.GetAll();
+				model.Stocks = _solver.GetAllStocks();
 			}
 			catch (Exception e)
 			{
@@ -163,12 +168,12 @@ namespace UILayerWebsite.Controllers
 				// If portfolio name selected than delete it
 				if (!String.IsNullOrWhiteSpace(ownerName))
 				{
-					_db.PortfolioRepository.Delete(ownerName);
+					_solver.DeletePortfolio(ownerName);
 					model.IsResult = true;
 				}
 
 				// Get all portfolios
-				model.Portfolios = _db.PortfolioRepository.GetAll();
+				model.Portfolios = _solver.GetAllPortfolios();
 			}
 			catch (Exception e)
 			{
@@ -191,7 +196,7 @@ namespace UILayerWebsite.Controllers
 				    !String.IsNullOrWhiteSpace(date))
 				{
 					// Check for existing
-					if (_db.PortfolioRepository.Get(ownerName) == null)
+					if (_solver.GetPortfolio(ownerName) == null)
 					{
 						throw new Exception("Портфель не существует");
 					}
@@ -226,14 +231,14 @@ namespace UILayerWebsite.Controllers
 					}
 
 					// Get stock
-					Stock stock = _db.StockRepository.Get(stockName);
+					Stock stock = _solver.GetStock(stockName);
 					if (stock == null)
 					{
 						throw new Exception("Выбрана несуществующая ценная бумага");
 					}
 
-					// Create new portfolio
-					Portfolio foundPortfolio = _db.PortfolioRepository.Get(ownerName);
+					// Find portfolio
+					Portfolio foundPortfolio = _solver.GetPortfolio(ownerName);
 					if (foundPortfolio == null)
 					{
 						throw new Exception("Портфеля не существует");
@@ -242,12 +247,12 @@ namespace UILayerWebsite.Controllers
 					foundPortfolio.AddDeal(new Deal(stock, dealType, newDate, amount));
 
 					// Update portfolio
-					_db.PortfolioRepository.Update(foundPortfolio);
+					_solver.UpdatePortfolio(foundPortfolio);
 					model.IsResult = true;
 				}
 
-				model.Portfolios = _db.PortfolioRepository.GetAll();
-				model.Stocks = _db.StockRepository.GetAll();
+				model.Portfolios = _solver.GetAllPortfolios();
+				model.Stocks = _solver.GetAllStocks();
 			}
 			catch (Exception e)
 			{

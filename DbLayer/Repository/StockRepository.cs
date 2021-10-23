@@ -102,23 +102,5 @@ namespace DbLayer.Repository
 		{
 			return File.ReadLines(_stocksDbPath).ToList().ToStocks();
 		}
-
-		public void PrintAll()
-		{
-			using (StreamReader stockReader = new StreamReader(_stocksDbPath))
-			{
-				string line;
-				while ((line = stockReader.ReadLine()) != null)
-				{
-					Console.WriteLine(line);
-				}
-			}
-
-			// List<string> lines = File.ReadLines(_stocksDbPath).ToList();
-			// foreach (string line in lines)
-			// {
-			// 	Console.WriteLine(line);
-			// }
-		}
 	}
 }

@@ -10,7 +10,6 @@ namespace DbLayer.Repository
 		void Delete(string name);
 		void Update(Stock update);
 		List<Stock> GetAll();
-		void PrintAll();
 	}
 
 	public interface IPortfolioRepository
@@ -20,6 +19,5 @@ namespace DbLayer.Repository
 		void Update(Portfolio portfolio);
 		public void Delete(string owner);
 		List<Portfolio> GetAll();
-		void PrintAll();
 	}
 }

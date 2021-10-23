@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using BusinessLayer;
 using DbLayer;
 using DbLayer.Models;
 using DbLayer.Repository;
@@ -9,20 +10,21 @@ using UILayerWebsite.Models;
 
 namespace UILayerWebsite.Controllers
 {
-
 	public class StocksController : Controller
 	{
 		private readonly ILogger<StocksController> _logger;
-		private readonly Db _db;
+		private readonly Solver _solver;
 
 		public StocksController(ILogger<StocksController> logger)
 		{
 			_logger = logger;
 			// Init db
-			_db = new Db(
+			var db = new Db(
 				new StockRepository(Helpers.DefaultStocksDbPath),
 				new PortfolioRepository(Helpers.DefaultPortfolioDbPath)
 			);
+
+			_solver = new Solver(db);
 		}
 
 		// Index
@@ -38,7 +40,7 @@ namespace UILayerWebsite.Controllers
 			try
 			{
 				// Get all stocks
-				model.Stocks = _db.StockRepository.GetAll();
+				model.Stocks = _solver.GetAllStocks();
 				if (!String.IsNullOrWhiteSpace(stockName))
 				{
 					// Find index of selected stock
@@ -65,7 +67,7 @@ namespace UILayerWebsite.Controllers
 			List<Stock> stocks;
 			try
 			{
-				stocks = _db.StockRepository.GetAll();
+				stocks = _solver.GetAllStocks();
 			}
 			catch (Exception e)
 			{
@@ -102,7 +104,7 @@ namespace UILayerWebsite.Controllers
 					});
 
 					// save new stock
-					if (_db.StockRepository.Insert(newStock))
+					if (_solver.InsertStock(newStock))
 					{
 						model.IsResult = true;
 					}
@@ -127,12 +129,12 @@ namespace UILayerWebsite.Controllers
 				// If stock name selected than delete it
 				if (!String.IsNullOrWhiteSpace(stockName))
 				{
-					_db.StockRepository.Delete(stockName);
+					_solver.DeleteStock(stockName);
 					model.IsResult = true;
 				}
 
 				// Get all stocks
-				model.Stocks = _db.StockRepository.GetAll();
+				model.Stocks = _solver.GetAllStocks();
 			}
 			catch (Exception e)
 			{
@@ -164,7 +166,7 @@ namespace UILayerWebsite.Controllers
 					}
 
 					// Create new stock
-					Stock foundStock = _db.StockRepository.Get(stockName);
+					Stock foundStock = _solver.GetStock(stockName);
 					if (foundStock == null)
 					{
 						throw new Exception("Ценная бумага не существует");
@@ -174,12 +176,12 @@ namespace UILayerWebsite.Controllers
 					foundStock.AddRate(new Rate(newDate, rate));
 
 					// save updated stock
-					_db.StockRepository.Update(foundStock);
+					_solver.UpdateStock(foundStock);
 					model.IsResult = true;
 				}
-				
+
 				// Get all stocks
-				model.Stocks = _db.StockRepository.GetAll();
+				model.Stocks = _solver.GetAllStocks();
 			}
 			catch (Exception e)
 			{

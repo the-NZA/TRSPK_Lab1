@@ -97,17 +97,5 @@ namespace DbLayer.Repository
 		{
 			return File.ReadLines(_portfolioDbPath).ToList().ToPortfolio();
 		}
-
-		public void PrintAll()
-		{
-			using (StreamReader portfolioReader = new StreamReader(_portfolioDbPath))
-			{
-				string line;
-				while ((line = portfolioReader.ReadLine()) != null)
-				{
-					Console.WriteLine(line);
-				}
-			}
-		}
 	}
 }

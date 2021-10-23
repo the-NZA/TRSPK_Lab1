@@ -38,9 +38,92 @@ namespace BusinessLayer
 			{
 				throw new Exception("Db can't be null");
 			}
-			
+
 			_db = db;
 		}
+
+		// Portfolio CRUD operations
+		public List<Portfolio> GetAllPortfolios()
+		{
+			return _db.PortfolioRepository.GetAll();
+		}
+
+		public Portfolio GetPortfolio(string ownerName)
+		{
+			if (String.IsNullOrWhiteSpace(ownerName))
+			{
+				throw new Exception("Owner name can't be null or empty");
+			}
+
+			return _db.PortfolioRepository.Get(ownerName);
+		}
+		
+		public bool InsertPortfolio(Portfolio portfolio)
+		{
+			if (portfolio == null)
+			{
+				throw new Exception("Portfolio can't be null");
+			}
+
+			return _db.PortfolioRepository.Insert(portfolio);
+		}
+		
+		public void DeletePortfolio(string ownerName)
+		{
+			_db.PortfolioRepository.Delete(ownerName);
+		}
+
+		public void UpdatePortfolio(Portfolio updatedPortfolio)
+		{
+			if (updatedPortfolio == null)
+			{
+				throw new Exception("Updated portfolio can't be null");
+			}
+
+			_db.PortfolioRepository.Update(updatedPortfolio);
+		}
+		
+		// Stock CRUD operations
+		public List<Stock> GetAllStocks()
+		{
+			return _db.StockRepository.GetAll();
+		}
+
+		public Stock GetStock(string stockName)
+		{
+			if (String.IsNullOrWhiteSpace(stockName))
+			{
+				throw new Exception("Stock name can't be null or empty");
+			}
+
+			return _db.StockRepository.Get(stockName);
+		}
+
+		public bool InsertStock(Stock stock)
+		{
+			if (stock == null)
+			{
+				throw new Exception("Stock can't be null");
+			}
+
+			return _db.StockRepository.Insert(stock);
+		}
+
+		public void DeleteStock(string stockName)
+		{
+			_db.StockRepository.Delete(stockName);
+		}
+
+		public void UpdateStock(Stock updatedStock)
+		{
+			if (updatedStock == null)
+			{
+				throw new Exception("Updated Stock can't be null");
+			}
+
+			_db.StockRepository.Update(updatedStock);
+		}
+
 
 		public decimal SolveOne(string ownerName, DateTime date)
 		{
