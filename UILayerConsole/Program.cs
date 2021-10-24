@@ -14,10 +14,10 @@ namespace UILayerConsole
 			// Init repositories, db and solver
 			try
 			{
-				StockRepository stockRepo = new StockRepository(Helpers.DefaultStocksDbPath);
-				PortfolioRepository portfolioRepo =
-					new PortfolioRepository(Helpers.DefaultPortfolioDbPath);
+				var stockRepo = new StockRepository(Helpers.DefaultStocksDbPath);
+				var portfolioRepo = new PortfolioRepository(Helpers.DefaultPortfolioDbPath);
 				var db = new Db(stockRepo, portfolioRepo);
+				
 				slvr = new Solver(db);
 			}
 			catch (Exception e)
