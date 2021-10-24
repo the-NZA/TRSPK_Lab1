@@ -34,15 +34,10 @@ namespace BusinessLayer
 
 		public Solver(Db db)
 		{
-			if (db == null)
-			{
-				throw new Exception("Db can't be null");
-			}
-
-			_db = db;
+			_db = db ?? throw new Exception("Db can't be null");
 		}
 
-		// Portfolio CRUD operations
+		/* Portfolio CRUD operations */
 		public List<Portfolio> GetAllPortfolios()
 		{
 			return _db.PortfolioRepository.GetAll();
@@ -88,7 +83,7 @@ namespace BusinessLayer
 			_db.PortfolioRepository.Update(updatedPortfolio);
 		}
 		
-		// Stock CRUD operations
+		/* Stock CRUD operations */
 		public List<Stock> GetAllStocks()
 		{
 			return _db.StockRepository.GetAll();

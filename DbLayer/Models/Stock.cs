@@ -96,7 +96,7 @@ namespace DbLayer.Models
 
 		public List<Rate> GetRates()
 		{
-			return this._rates;
+			return _rates;
 		}
 
 		public string Marshal()

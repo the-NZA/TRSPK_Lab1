@@ -147,7 +147,7 @@ namespace DbLayer.Models
 
 			return deals;
 		}
-		
+
 		public List<Deal> GetDeals()
 		{
 			return this._deals;
@@ -178,8 +178,7 @@ namespace DbLayer.Models
 
 			for (int i = 0, j = 1; i < _deals.Count; i++)
 			{
-				sb.Append(string.Format((i + 1) == _deals.Count ? "{0}" : "{0}, ",
-					_deals[i]));
+				sb.Append(string.Format((i + 1) == _deals.Count ? "{0}" : "{0}, ", _deals[i]));
 
 				if (j == numCols)
 				{

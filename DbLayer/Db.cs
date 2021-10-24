@@ -21,6 +21,7 @@ namespace DbLayer
 			PortfolioRepository = portfolioRepository;
 		}
 
+		// ! Just for development purposes
 		public void SetupStocks()
 		{
 			this.StockRepository.Insert(new Stock("YNDX", new List<Rate>
@@ -178,6 +179,7 @@ namespace DbLayer
 			}));
 		}
 
+		// ! Just for development purposes
 		public void SetupPortfolio()
 		{
 			var yndx = this.StockRepository.Get("YNDX");

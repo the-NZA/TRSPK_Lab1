@@ -31,7 +31,6 @@ namespace DbLayer.Models
 			}
 
 			Cost = amount * rate.Price;
-
 			StockName = stock.Name;
 			Amount = amount;
 			Type = type;
